@@ -1,0 +1,13 @@
+.p-post-body__podcast-caption {
+  font-size: 14px !important;
+  color: #1c5a19 !important;
+  text-align: left;
+}
+
+.p-post-body__cta-button a[target="_blank"] {
+  background-image: none;
+}
+
+.acf-button.button.button-primary {
+  color: #fff;
+}

@@ -1,0 +1,48 @@
+/* ======================================
+  管理画面
+======================================= */
+
+/* 投稿編集画面AIOSEO設定非表示 */
+.wp-admin #aioseo-settings {
+  display: none;
+}
+
+/* 投稿編集画面AIOSEO設定非表示 */
+.wp-admin .aioseo-seo-overview {
+  display: none;
+}
+
+/* 投稿編集画面AIOSEO設定非表示 */
+.wp-admin .aioseo-review-plugin-cta {
+  display: none;
+}
+
+/* Gutenbergのデフォルト不要ブロック非表示 */
+
+.editor-block-list-item-aioseo-faq {
+  display: none !important;
+}
+
+.block-editor-inserter__panel-content:nth-child(4) {
+  display: none !important;
+}
+
+.block-editor-inserter__panel-content:nth-child(8) {
+  display: none !important;
+}
+
+.block-editor-inserter__panel-header {
+  display: none !important;
+}
+
+.block-editor-inserter__panel-content:nth-child(6) {
+  display: none !important;
+}
+
+.block-editor-inserter__panel-content:nth-child(10) {
+  display: none !important;
+}
+
+.block-editor-inserter__tips {
+  display: none !important;
+}
