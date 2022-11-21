@@ -64,6 +64,21 @@ function nbr($str)
 	return nl2br(wp_kses($str, ARROWED_HTML));
 }
 
+/**
+ *  特定のタグ以外をエクケープ解除
+ *
+ * @param string $str
+ *
+ * @return false|string
+ */
+function unescaped($str)
+{
+    if (empty($str) || !is_string($str)) {
+        return false;
+    }
+	return wp_kses($str, ARROWED_HTML);
+}
+
 
 /**
  * 文字をエスケープ+改行コードをbrタグに変換

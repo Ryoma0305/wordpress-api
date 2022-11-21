@@ -18,7 +18,7 @@ function add_rest_endpoint_all_slides_from_top()
     )
   );
 
-  register_rest_field( 'paded',
+  register_rest_field( 'paged',
     'acf',
      array(
       'get_callback'    => 'register_fields',
@@ -82,6 +82,7 @@ function get_all_posts_from_stories()
         'excerpt' => $post->post_excerpt,
         'content' => $post->post_content,
         'category' => get_the_terms($post->ID, 'story_category')[0]->name,
+        'category_slug' => get_the_terms($post->ID, 'story_category')[0]->slug,
         'main_img' => get_field('main_img', $post->ID),
         'thumbnail_img' => get_field('thumbnail_img', $post->ID),
       );
@@ -147,7 +148,7 @@ function add_rest_endpoint_all_categories_from_stories()
 {
   register_rest_route(
     'wp/api',
-    '/stories/categories',
+    '/story_category',
     array(
       'methods' => 'GET',
       'callback' => 'get_all_categories_from_stories'
@@ -157,11 +158,7 @@ function add_rest_endpoint_all_categories_from_stories()
 
 function get_all_categories_from_stories()
 {
-    // $result = array();
     $result = get_terms('story_category');
-
-    // array_push($result, $categories);
-
     return $result;
 }
 add_action('rest_api_init', 'add_rest_endpoint_all_categories_from_stories');
@@ -291,28 +288,46 @@ add_action('rest_api_init', 'add_rest_endpoint_single_posts_from_services');
 // -----------------------------------------------------------------
 // Services category
 // -----------------------------------------------------------------
-function add_rest_endpoint_all_categories_from_services()
+function add_rest_endpoint_all_service_category()
 {
   register_rest_route(
     'wp/api',
-    '/services/categories',
+    '/service_category',
     array(
       'methods' => 'GET',
-      'callback' => 'get_all_categories_from_services'
+      'callback' => 'get_all_service_category'
     )
   );
 }
 
-function get_all_categories_from_services()
+function get_all_service_category()
 {
-    // $result = array();
     $result = get_terms('service_category');
-
-    // array_push($result, $categories);
-
     return $result;
 }
-add_action('rest_api_init', 'add_rest_endpoint_all_categories_from_services');
+add_action('rest_api_init', 'add_rest_endpoint_all_service_category');
+
+// -----------------------------------------------------------------
+// Services theme
+// -----------------------------------------------------------------
+function add_rest_endpoint_all_service_theme()
+{
+  register_rest_route(
+    'wp/api',
+    '/service_theme',
+    array(
+      'methods' => 'GET',
+      'callback' => 'get_all_service_theme'
+    )
+  );
+}
+
+function get_all_service_theme()
+{
+    $result = get_terms('service_theme');
+    return $result;
+}
+add_action('rest_api_init', 'add_rest_endpoint_all_service_theme');
 
 
 // -----------------------------------------------------------------
@@ -493,7 +508,7 @@ function add_rest_endpoint_all_programs_from_forbiz()
 {
   register_rest_route(
     'wp/api',
-    '/forbiz/programs',
+    '/forbiz_programs',
     array(
       'methods' => 'GET',
       'callback' => 'get_all_programs_from_forbiz'
@@ -512,13 +527,7 @@ function add_rest_endpoint_all_programs_from_forbiz()
 
 function get_all_programs_from_forbiz()
 {
-
-    $result = array();
-    $data = array(
-      'program' => get_field('program'),
-    );
-
-    array_push($result, $data);
+    $result =  get_field('program', 186);
     return $result;
 }
 add_action('rest_api_init', 'add_rest_endpoint_all_programs_from_forbiz');
