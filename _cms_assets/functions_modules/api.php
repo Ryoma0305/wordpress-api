@@ -32,14 +32,14 @@ function add_rest_endpoint_all_slides_from_top()
 
 function get_all_slides_from_top()
 {
-    $result = array();
-    $data = array(
-        'key_visual' => get_field('key_visual', 'option'),
-        'cat1_service_list' => get_field('cat1_service_list', 'option'),
-        'cat2_service_list' => get_field('cat2_service_list', 'option'),
-    );
+    $result = get_field('key_visual', 'option');
+    // $data = array(
+    //     'key_visual' => get_field('key_visual', 'option'),
+    //     'cat1_service_list' => get_field('cat1_service_list', 'option'),
+    //     'cat2_service_list' => get_field('cat2_service_list', 'option'),
+    // );
 
-    array_push($result, $data);
+    // array_push($result, $data);
     return $result;
 }
 add_action('rest_api_init', 'add_rest_endpoint_all_slides_from_top');
@@ -97,48 +97,94 @@ add_action('rest_api_init', 'add_rest_endpoint_all_posts_from_stories');
 // -----------------------------------------------------------------
 // Stories detail
 // -----------------------------------------------------------------
+
 function add_rest_endpoint_single_posts_from_stories() {
-    register_rest_route(
-      'wp/api',
-      '/stories/(?P<id>\S+)',
-      array(
-        'methods' => 'GET',
-        'callback' => 'get_single_posts_from_stories',
-        'permission_callback' => function() { return true; }
-      )
+  register_rest_route(
+    'wp/api',
+    '/stories-detail',
+    array(
+      'methods' => 'GET',
+      'callback' => 'get_single_posts_from_stories',
+      'permission_callback' => function() { return true; }
+    )
+  );
+}
+function get_single_posts_from_stories($parameter) {
+  $limit = $parameter->get_param('limit');
+  $offset = $parameter->get_param('offset');
+  if(is_null($limit)){
+    $limit = 5;
+  }
+
+  if(is_null($offset)){
+    $offset = 0;
+  }
+
+  $args_all = array(
+    'posts_per_page' => -1,
+    'post_type' => 'stories',
+    'post_status' => 'publish',
+    'orderby' => 'date',
+    'order' => 'DESC',
+  );
+  $all_posts = get_posts($args_all);
+  $posts = array_slice($all_posts, $offset, $limit);
+
+  $next = null;
+  $prev = null;
+  if($offset > 0){
+    $prev = $offset - $limit;
+    if($prev < 0){
+      $prev = 0;
+    }
+  }
+
+  if($offset < (count($all_posts) - $limit)){
+    $next = $offset + $limit;
+    if($next > (count($all_posts) - $limit)){
+      $next = (count($all_posts) - $limit);
+    }
+  }
+  // o o o o o o o o o o
+  //           ↑(count - limit)
+  //   ↑(offset)
+  //           ↑(next)
+
+  $json = array();
+  $result = array();
+
+  foreach($posts as $post) {
+    $data = array(
+      'ID' => $post->ID,
+      'thumbnail' => get_the_post_thumbnail_url($post->ID, 'full'),
+      'slug' => $post->post_name,
+      'date' => $post->post_date,
+      'modified' => $post->post_modified,
+      'title' => $post->post_title,
+      'excerpt' => $post->post_excerpt,
+      'content' => $post->post_content,
+      'category' => get_the_terms($post->ID, 'story_category')[0]->name,
     );
-  }
-  function get_single_posts_from_stories($parameter) {
+    array_push($result, $data);
+  };
+  $json['count'] = count($all_posts);
 
-      $result = array();
-      $args_single = array(
-        'posts_per_page' => 1,
-        'post_type' => 'stories',
-        'post_status' => 'publish',
-        // 'name' => $parameter['slug']
-        'include' => $parameter['id'],
-      );
-      $single_post = get_posts($args_single);
-      foreach($single_post as $post) {
-        $data = array(
-          'ID' => $post->ID,
-          'URL' => $post->guid,
-          'thumbnail' => get_the_post_thumbnail_url($post->ID, 'full'),
-          'slug' => $post->post_name,
-          'date' => $post->post_date,
-          'modified' => $post->post_modified,
-          'title' => $post->post_title,
-          'excerpt' => $post->post_excerpt,
-          'content' => $post->post_content,
-          'post_author' => $post->post_author,
-          'category' => get_the_terms($post->ID, 'story_category')[0]->name,
-        );
-        array_push($result, $data);
-      };
-      return $result;
-
+  if(is_null($prev)){
+    $json['prev'] = 'null';
+  }else{
+    $json['prev'] = 'http://practicearimuraryomacom.local/wp-json/wp/api/stories-detail?offset=' . $prev . '&limit=' . $limit;
   }
-  add_action('rest_api_init', 'add_rest_endpoint_single_posts_from_stories');
+
+  if(is_null($next)){
+    $json['next'] = 'null';
+  }else{
+    $json['next'] = 'http://practicearimuraryomacom.local/wp-json/wp/api/stories-detail?offset=' . $next . '&limit=' . $limit;
+  }
+
+  $json['results'] = $result;
+  return $json;
+}
+add_action('rest_api_init', 'add_rest_endpoint_single_posts_from_stories');
 
 
 // -----------------------------------------------------------------
