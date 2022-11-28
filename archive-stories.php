@@ -10,7 +10,7 @@ if (!empty($_GET)) {
 	if (get_query_var('category')) {
 		$story_args = array(
 			'post_type' => "stories",
-			'posts_per_page' => $global_vars['posts_per_page']['story'],
+			'posts_per_page' => 3,
 			'ignore_sticky_posts' => 1,
 			'tax_query' => array(
 				array(
@@ -25,7 +25,8 @@ if (!empty($_GET)) {
 } else {
 	$story_args = [
 		'post_type' => "stories",
-		'posts_per_page' => $global_vars['posts_per_page']['story'],
+		'posts_per_page' => 3,
+		'ignore_sticky_posts' => 1,
 	];
 }
 
@@ -112,33 +113,33 @@ $story_query = new WP_Query($story_args);
 			</form>
 		</div>
 		<div class="p-story-body">
-			<ul class="p-story-body__list js-fade-in-scroll-ul">
-				<?php if ($story_query->have_posts()) : while ($story_query->have_posts()) : $story_query->the_post();
+			<ul class="p-story-body__list js-fade-in-scroll-ul" id="infinite_loading_container">
+			<?php if ($story_query->have_posts()) : while ($story_query->have_posts()) : $story_query->the_post();
 
-					// サムネイル画像
-					$thumb =  get_field('thumbnail_img') ?  get_field('thumbnail_img') : get_field('main_img');
-					$img = $thumb ? $thumb['sizes']['story_thumb_size'] : $global_vars['nophoto']["common"];
-				?>
-					<li class="p-story js-fade-in-scroll-li">
-						<a class="p-story__text" href="<?php the_permalink(); ?>"><?php get_limited_text(get_the_title(), 35); ?></a>
-						<ul class="p-story__tag-list">
-							<?php $category = wp_get_object_terms($post->ID, $taxonomy); ?>
-							<?php if ($category) : foreach ($category as $c) : ?>
-									<li>
-										<a class="c-tag" href="<?php echo esc_url(home_url('/')); ?>/stories/?category=<?php echo esc_html($c->slug); ?>"><?php echo esc_html($c->name); ?></a>
-									</li>
-							<?php endforeach;
-							endif; ?>
-						</ul>
-						<figure class="p-story__media">
-							<img class="p-story__image" src="<?php echo esc_url($img); ?>" alt="">
-						</figure>
-					</li>
-				<?php endwhile;
-				endif; ?>
+				// サムネイル画像
+				$thumb =  get_field('thumbnail_img') ?  get_field('thumbnail_img') : get_field('main_img');
+				$img = $thumb ? $thumb['sizes']['story_thumb_size'] : $global_vars['nophoto']["common"];
+			?>
+				<li class="p-story js-fade-in-scroll-li">
+					<a class="p-story__text" href="<?php the_permalink(); ?>"><?php get_limited_text(get_the_title(), 35); ?></a>
+					<ul class="p-story__tag-list">
+						<?php $category = wp_get_object_terms($post->ID, $taxonomy); ?>
+						<?php if ($category) : foreach ($category as $c) : ?>
+							<li>
+								<a class="c-tag" href="<?php echo esc_url(home_url('/')); ?>/stories/?category=<?php echo esc_html($c->slug); ?>"><?php echo esc_html($c->name); ?></a>
+							</li>
+						<?php endforeach;
+						endif; ?>
+					</ul>
+					<figure class="p-story__media">
+						<img class="p-story__image" src="<?php echo esc_url($img); ?>" alt="">
+					</figure>
+				</li>
+			<?php endwhile;
+			endif; ?>
 			</ul>
 			<div class="p-story-body__footer">
-				<button class="c-button -primary -fix -icon p-story-body__button" type="button">もっとみる
+				<button class="c-button -primary -fix -icon p-story-body__button" id="infinite_loading_button" type="button">もっとみる
 					<svg width="25" height="24" viewBox="0 0 25 24" xmlns="http://www.w3.org/2000/svg">
 						<path d="M18.5 13H13.5V18C13.5 18.55 13.05 19 12.5 19C11.95 19 11.5 18.55 11.5 18V13H6.5C5.95 13 5.5 12.55 5.5 12C5.5 11.45 5.95 11 6.5 11H11.5V6C11.5 5.45 11.95 5 12.5 5C13.05 5 13.5 5.45 13.5 6V11H18.5C19.05 11 19.5 11.45 19.5 12C19.5 12.55 19.05 13 18.5 13Z" />
 					</svg>
@@ -149,7 +150,7 @@ $story_query = new WP_Query($story_args);
 </section>
 <?php get_template_part('includes/footer'); ?>
 <!-- もっと見るボタンクリックで記事追加表示 -->
-<script>
+<!-- <script>
 	let moreNum = 0;
 	if (navigator.userAgent.indexOf('iPhone') > 0 || navigator.userAgent.indexOf('Android') > 0 && navigator.userAgent.indexOf('Mobile') > 0) {
 		moreNum = 6;
@@ -178,7 +179,7 @@ $story_query = new WP_Query($story_args);
 			$('.p-story-body__button').addClass('is-hidden');
 		}
 	});
-</script>
+</script> -->
 <!--/ もっと見るボタンクリックで記事追加表示 -->
 
 <!-- ボタンに選択中タグ名表示 -->

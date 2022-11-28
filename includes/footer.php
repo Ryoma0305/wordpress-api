@@ -91,4 +91,5 @@
 
 <?php if (is_post_type_archive('stories')) : ?>
 <script src="<?php get_template_directory_uri(); ?>/wp-content/themes/hagukumu.co.jp/_cms_assets/scripts/story-filtering-ui.js?ver=<?php echo $theme_info->get('Version'); ?>"></script>
+<script src="<?php get_template_directory_uri(); ?>/wp-content/themes/hagukumu.co.jp/_cms_assets/scripts/post.js"></script>
 <?php endif; ?>
